@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jueces Oye's • Club de Golf Colima</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10b981',
+                        darkBg: '#08111e'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #060d17; -webkit-tap-highlight-color: transparent; }
+        .toast-slide { animation: slideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideDown {
+            from { transform: translate(-50%, -20px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen flex flex-col justify-between items-center p-3 sm:p-5 antialiased selection:bg-emerald-500/30">
+
+    <!-- CONTENEDOR DE TOAST MODERNO -->
+    <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-sm pointer-events-none"></div>
+
+    <!-- HEADER LOGOS Y TITULO DISPOSITIVO MOVIL -->
+    <header class="w-full max-w-sm text-center pt-2 pb-3">
+        <div class="inline-flex items-center justify-center gap-3 p-2 bg-white/5 border border-white/10 rounded-2xl mb-2 shadow-2xl backdrop-blur-md">
+            <img src="../golcolima.jpg" alt="Club Colima" class="h-12 w-auto object-contain rounded-xl" onerror="this.style.display='none'">
+            <img src="../logoclub.png" alt="Asociación" class="h-12 w-auto object-contain rounded-xl" onerror="this.style.display='none'">
+        </div>
+        <h1 class="text-lg font-black uppercase tracking-tight text-white leading-tight">Club de Golf Colima</h1>
+        <div class="flex items-center justify-center gap-1.5 mt-0.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <p id="tournament-subtitle" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Portal de Jueces en Campo</p>
+        </div>
+    </header>
+
+    <!-- PANTALLA 1: LOGIN CÓDIGO DE JUEZ O NUMERO DE HOYO -->
+    <main id="screen-login" class="w-full max-w-sm bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5 my-auto backdrop-blur-xl">
+        <div class="text-center space-y-1">
+            <div class="w-12 h-12 bg-emerald-500/15 border border-emerald-500/30 rounded-2xl mx-auto flex items-center justify-center text-emerald-400 mb-2">
+                <span class="material-icons-round text-2xl">sports_golf</span>
+            </div>
+            <h2 class="text-base font-black uppercase tracking-tight text-white">Registro de Oye's en Campo</h2>
+            <p class="text-[9px] font-black uppercase text-emerald-400 tracking-widest">Solo Personal Autorizado</p>
+        </div>
+
+        <form onsubmit="event.preventDefault(); loginJudge();" class="space-y-4">
+            <div>
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Hoyo Asignado o Código</label>
+                <div class="relative">
+                    <span class="material-icons-round absolute left-4 top-3.5 text-slate-500 text-lg">flag</span>
+                    <input id="judge-code" type="text" placeholder="Ej. hoyo 2  ó  2" autocomplete="off"
+                        class="w-full pl-12 pr-4 py-3.5 bg-slate-800/80 border border-slate-700 rounded-2xl text-white text-base font-black uppercase tracking-wider text-center focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
+                </div>
+            </div>
+
+            <button type="submit"
+                class="w-full py-4 bg-primary hover:bg-emerald-400 text-slate-950 rounded-2xl font-black uppercase tracking-widest text-xs active:scale-[0.98] transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                <span class="material-icons-round text-lg">login</span> Entrar al Hoyo
+            </button>
+        </form>
+
+        <div class="text-center pt-1 border-t border-slate-800/80">
+            <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">🔒 Conexión Segura en Campo • Golf Target</span>
+        </div>
+    </main>
+
+    <!-- PANTALLA 2: FORMULARIO MÓVIL DE CAPTURA JUEZ -->
+    <main id="screen-capture" class="hidden w-full max-w-sm bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-5 my-auto backdrop-blur-xl">
+        <!-- Banner Superior del Hoyo -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div class="flex items-center gap-3">
+                <div id="judge-hole-badge" class="w-11 h-11 bg-emerald-500 text-slate-950 font-black rounded-2xl flex items-center justify-center text-lg shadow-lg shadow-emerald-500/20">
+                    #2
+                </div>
+                <div>
+                    <p id="judge-course-name" class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Club Colima</p>
+                    <h2 id="judge-hole-title" class="text-xl font-black text-white uppercase tracking-tight">HOYO 2</h2>
+                </div>
+            </div>
+            <button onclick="logoutJudge()" title="Salir del Hoyo"
+                class="w-10 h-10 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded-2xl flex items-center justify-center text-slate-400 hover:text-white transition-all border border-slate-700">
+                <span class="material-icons-round text-lg">logout</span>
+            </button>
+        </div>
+
+        <!-- Formulario de Captura -->
+        <form onsubmit="event.preventDefault(); submitJudgeOye();" class="space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xs font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                    <span class="material-icons-round text-sm">add_circle</span> Nuevo Registro Oye's
+                </h3>
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Nombre del Jugador</label>
+                <div class="relative">
+                    <span class="material-icons-round absolute left-4 top-3.5 text-slate-500 text-lg">person</span>
+                    <input id="judge-player-name" placeholder="Nombre del jugador..." list="players-datalist" autocomplete="off"
+                        class="w-full pl-11 pr-4 py-3.5 bg-slate-800/80 border border-slate-700 rounded-2xl text-white text-sm font-bold placeholder:text-slate-600 uppercase focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
+                </div>
+                <datalist id="players-datalist"></datalist>
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Distancia del Hoyo (MTS)</label>
+                <div class="relative">
+                    <input id="judge-distance" type="number" step="0.01" inputmode="decimal" placeholder="0.00" autocomplete="off"
+                        class="w-full px-4 py-3.5 bg-slate-800/80 border border-slate-700 rounded-2xl text-white text-3xl font-black text-center focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
+                    <span class="absolute right-4 top-4 text-xs font-black text-slate-500 uppercase tracking-wider">MTS</span>
+                </div>
+            </div>
+
+            <button type="submit" id="btn-submit-oye"
+                class="w-full py-4 bg-primary hover:bg-emerald-400 active:scale-[0.98] text-slate-950 rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                <span class="material-icons-round text-base">send</span> Registrar Oye's
+            </button>
+        </form>
+
+        <!-- Ranking en Vivo para el Hoyo -->
+        <div class="pt-4 border-t border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+                <span class="text-[10px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1">
+                    <span class="material-icons-round text-xs text-amber-400">emoji_events</span> Marcas en este Hoyo
+                </span>
+                <span id="judge-hole-count" class="px-2.5 py-0.5 bg-slate-800 border border-slate-700 rounded-full text-[10px] font-black text-emerald-400">0</span>
+            </div>
+            <div id="judge-hole-list" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                <!-- Se puebla desde JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER MÓVIL -->
+    <footer class="w-full max-w-sm text-center py-3 text-[9px] font-bold text-slate-600 uppercase tracking-widest">
+        Club de Golf Colima • Captura en Campo
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PassGolf | Live Tournament</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <!-- Iconos -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" crossorigin href="/assets/torneo-BOYWrxEw.css">
+</head>
+
+<body class="bg-slate-950 text-white font-['Inter'] selection:bg-emerald-500/30 overflow-x-hidden">
+
+    <!-- Hero / Background Effects -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+        <div class="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-emerald-500/10 blur-[120px] rounded-full"></div>
+        <div class="absolute -bottom-[20%] -right-[10%] w-[50%] h-[50%] bg-blue-500/10 blur-[120px] rounded-full"></div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="relative min-h-screen flex flex-col p-4 md:p-8 max-w-5xl mx-auto">
+
+        <!-- Header -->
+        <header class="flex flex-col gap-4 mb-8 pt-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 p-1.5 bg-white/5 border border-white/10 rounded-2xl shadow-xl backdrop-blur-md">
+                        <img src="/assets/golcolima-KKJfatPr.jpg" alt="Club Colima" class="h-10 w-auto object-contain rounded-xl" onerror="this.style.display='none'">
+                        <img src="/assets/logoclub-BXRAG4Hz.png" alt="Asociación" class="h-10 w-auto object-contain rounded-xl" onerror="this.style.display='none'">
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="printView()" class="w-10 h-10 bg-white/5 hover:bg-white/10 active:scale-95 rounded-2xl flex items-center justify-center transition-all border border-white/5">
+                        <span class="material-icons-round text-slate-400 text-sm">print</span>
+                    </button>
+                    <span id="live-indicator" class="flex h-2 w-2 relative">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500">Live Update</span>
+                </div>
+            </div>
+
+            <div>
+                <h1 id="tournament-name" class="text-3xl font-black uppercase tracking-tight leading-none mb-1">
+                    Cargando...</h1>
+                <p id="tournament-location"
+                    class="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1">
+                    <span class="material-icons-round text-[12px]">location_on</span> ---
+                </p>
+            </div>
+
+            <!-- View Switcher (Tabs) -->
+            <div class="flex p-1 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/5 shadow-2xl mt-4">
+                <button onclick="switchView('salidas')" id="btn-salidas"
+                    class="tab-btn flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300">Salidas</button>
+                <button onclick="switchView('posiciones')" id="btn-posiciones"
+                    class="tab-btn flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300">Leaderboard</button>
+                <button onclick="switchView('oyeses')" id="btn-oyeses"
+                    class="tab-btn flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300">Oye's</button>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <section id="content-area" class="flex-1 space-y-6 animate-fade-in">
+            <!-- Loading State -->
+            <div id="loader" class="flex flex-col items-center justify-center py-20 gap-4">
+                <div class="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin">
+                </div>
+                <p class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Sincronizando Live Scores</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mt-12 py-8 border-t border-white/5 flex flex-col items-center gap-4 text-center">
+            <div class="flex items-center gap-2 opacity-30">
+                <span class="text-[9px] font-black uppercase tracking-[0.3em]">Powered by</span>
+                <span class="text-[9px] font-black uppercase text-emerald-500 tracking-[0.2em]">PassGolf &middot; Golf
+                    Target</span>
+            </div>
+        </footer>
+
+    </main>
+
+    <script src="app.js?v=2.3"></script>
+</body>
+
+</html>
