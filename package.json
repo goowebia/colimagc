@@ -2,21 +2,19 @@
   "name": "colimagc",
   "version": "1.0.0",
   "description": "",
-  "main": "supabase.js",
+  "type": "module",
+  "main": "server.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "start": "vite preview --host 0.0.0.0 --port 3000",
+    "start": "node server.js",
     "preview": "vite preview"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "devDependencies": {
     "vite": "^8.2.1"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.112.2"
+    "@supabase/supabase-js": "^2.112.2",
+    "express": "^5.2.1"
   }
 }
