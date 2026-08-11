@@ -9,12 +9,28 @@ console.log('=== COPY-DIST ===');
 console.log('__dirname:', __dirname);
 
 const distDir = path.join(__dirname, 'dist');
-
-// hbuilds/current/nodejs/ -> hbuilds/current/public_html/
-const targetPath = path.resolve(__dirname, '..', 'public_html');
-console.log('Target:', targetPath);
-console.log('Target exists:', fs.existsSync(targetPath));
 console.log('dist exists:', fs.existsSync(distDir));
+
+// Find the root public_html by traversing up until we find a directory
+// that has BOTH hbuilds/ and public_html/ as siblings
+function findRootPublicHtml(startDir) {
+    let current = startDir;
+    for (let i = 0; i < 10; i++) {
+        const parent = path.resolve(current, '..');
+        if (parent === current) break; // reached filesystem root
+        try {
+            const siblings = fs.readdirSync(parent);
+            if (siblings.includes('hbuilds') && siblings.includes('public_html')) {
+                return path.join(parent, 'public_html');
+            }
+        } catch(e) { /* permission denied, skip */ }
+        current = parent;
+    }
+    return null;
+}
+
+const rootPublicHtml = findRootPublicHtml(__dirname);
+console.log('Root public_html found at:', rootPublicHtml || 'NOT FOUND');
 
 function copyFolderRecursiveSync(from, to) {
     if (!fs.existsSync(to)) fs.mkdirSync(to, { recursive: true });
@@ -29,10 +45,14 @@ function copyFolderRecursiveSync(from, to) {
     });
 }
 
-try {
-    console.log(`\nCopying dist -> ${targetPath} ...`);
-    copyFolderRecursiveSync(distDir, targetPath);
-    console.log('Done! Files copied to public_html successfully.');
-} catch (err) {
-    console.error('Error:', err.message);
+if (rootPublicHtml) {
+    try {
+        console.log(`Copying dist -> ${rootPublicHtml} ...`);
+        copyFolderRecursiveSync(distDir, rootPublicHtml);
+        console.log('Done! Files copied to root public_html successfully.');
+    } catch (err) {
+        console.error('Error copying:', err.message);
+    }
+} else {
+    console.log('Could not find root public_html. Skipping copy.');
 }
