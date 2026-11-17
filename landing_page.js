@@ -1347,41 +1347,41 @@ export async function renderLandingPageModule(container) {
                 <!-- Backdrop -->
                 <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-md cursor-pointer" onclick="closeTeeTimeModal()"></div>
                 
-                <!-- Modal Content -->
-                <div class="relative w-full max-w-2xl bg-slate-900 border border-emerald-500/30 rounded-3xl shadow-2xl overflow-hidden flex flex-col transform scale-95 transition-transform duration-300 my-auto max-h-[92vh]" id="teetime-modal-content">
+                <!-- Modal Content (Estilo Editorial Limpio) -->
+                <div class="relative w-full max-w-2xl bg-white border border-slate-200 text-slate-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col transform scale-95 transition-transform duration-300 my-auto max-h-[92vh]" id="teetime-modal-content">
                     
                     <!-- Header -->
-                    <div class="p-6 pb-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+                    <div class="p-6 pb-4 border-b border-slate-100 flex items-center justify-between bg-[#f7f8f6]">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                            <div class="w-10 h-10 rounded-2xl bg-[#7cb518]/15 border border-[#7cb518]/30 flex items-center justify-center text-[#65a30d]">
                                 <span class="material-icons">golf_course</span>
                             </div>
                             <div>
-                                <h3 class="text-xl sm:text-2xl font-black text-white uppercase tracking-tight">Reservar Salida / Tee Time</h3>
-                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Club de Golf Colima · Campo de 18 Hoyos</p>
+                                <h3 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Reservar Salida / Tee Time</h3>
+                                <p class="text-[11px] font-bold text-[#65a30d] uppercase tracking-wider">Club de Golf Colima · Campo de 18 Hoyos</p>
                             </div>
                         </div>
-                        <button onclick="closeTeeTimeModal()" class="w-9 h-9 bg-slate-800 hover:bg-slate-700 text-white rounded-full flex items-center justify-center border border-white/10 transition-all cursor-pointer">
+                        <button onclick="closeTeeTimeModal()" class="w-9 h-9 bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 rounded-full flex items-center justify-center border border-slate-200 transition-all cursor-pointer shadow-sm">
                             <span class="material-icons text-sm">close</span>
                         </button>
                     </div>
 
                     <!-- Scrollable Form Body -->
-                    <form id="teetime-form" onsubmit="handleTeeTimeSubmit(event)" class="p-6 space-y-5 overflow-y-auto max-h-[75vh]">
+                    <form id="teetime-form" onsubmit="handleTeeTimeSubmit(event)" class="p-6 space-y-5 overflow-y-auto max-h-[75vh] bg-white">
                         
                         <!-- Socio vs Invitado selector -->
                         <div class="space-y-1.5">
-                            <label class="text-[11px] font-black text-slate-300 uppercase tracking-wider">Tipo de Jugador</label>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Tipo de Jugador</label>
                             <div class="grid grid-cols-2 gap-3">
                                 <label class="cursor-pointer">
                                     <input type="radio" name="tipo_jugador" value="Socio" checked class="peer hidden">
-                                    <div class="p-3 text-center rounded-2xl border border-slate-700 bg-slate-800/60 peer-checked:bg-emerald-500 peer-checked:text-slate-950 peer-checked:border-emerald-400 font-black text-xs uppercase tracking-wider transition-all">
+                                    <div class="p-3 text-center rounded-2xl border border-slate-200 bg-[#f7f8f6] text-slate-700 hover:border-[#7cb518]/50 peer-checked:bg-[#7cb518] peer-checked:text-white peer-checked:border-[#7cb518] font-bold text-xs uppercase tracking-wider transition-all shadow-sm">
                                         ⭐ Socio del Club
                                     </div>
                                 </label>
                                 <label class="cursor-pointer">
                                     <input type="radio" name="tipo_jugador" value="Invitado / No Socio" class="peer hidden">
-                                    <div class="p-3 text-center rounded-2xl border border-slate-700 bg-slate-800/60 peer-checked:bg-emerald-500 peer-checked:text-slate-950 peer-checked:border-emerald-400 font-black text-xs uppercase tracking-wider transition-all">
+                                    <div class="p-3 text-center rounded-2xl border border-slate-200 bg-[#f7f8f6] text-slate-700 hover:border-[#7cb518]/50 peer-checked:bg-[#005a9c] peer-checked:text-white peer-checked:border-[#005a9c] font-bold text-xs uppercase tracking-wider transition-all shadow-sm">
                                         🏌️ Invitado / No Socio
                                     </div>
                                 </label>
@@ -1391,28 +1391,28 @@ export async function renderLandingPageModule(container) {
                         <!-- Nombre & Teléfono -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
-                                <label class="text-[11px] font-black text-slate-300 uppercase tracking-wider">Nombre Completo *</label>
+                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Nombre Completo *</label>
                                 <input type="text" id="tt-nombre" required placeholder="Tu nombre y apellido"
-                                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl text-sm font-medium text-white placeholder-slate-500 outline-none transition-all">
+                                    class="w-full px-4 py-3 bg-[#f7f8f6] border border-slate-200 focus:bg-white focus:border-[#7cb518] focus:ring-1 focus:ring-[#7cb518] rounded-xl text-sm font-medium text-slate-900 placeholder-slate-400 outline-none transition-all">
                             </div>
                             <div class="space-y-1.5">
-                                <label class="text-[11px] font-black text-slate-300 uppercase tracking-wider">Teléfono / WhatsApp *</label>
+                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Teléfono / WhatsApp *</label>
                                 <input type="tel" id="tt-telefono" required placeholder="Ej: 312 123 4567"
-                                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl text-sm font-medium text-white placeholder-slate-500 outline-none transition-all">
+                                    class="w-full px-4 py-3 bg-[#f7f8f6] border border-slate-200 focus:bg-white focus:border-[#7cb518] focus:ring-1 focus:ring-[#7cb518] rounded-xl text-sm font-medium text-slate-900 placeholder-slate-400 outline-none transition-all">
                             </div>
                         </div>
 
                         <!-- Fecha & Horario -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
-                                <label class="text-[11px] font-black text-slate-300 uppercase tracking-wider">Fecha de Juego *</label>
+                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Fecha de Juego *</label>
                                 <input type="date" id="tt-fecha" required
-                                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl text-sm font-medium text-white outline-none transition-all">
+                                    class="w-full px-4 py-3 bg-[#f7f8f6] border border-slate-200 focus:bg-white focus:border-[#7cb518] focus:ring-1 focus:ring-[#7cb518] rounded-xl text-sm font-medium text-slate-900 outline-none transition-all">
                             </div>
                             <div class="space-y-1.5">
-                                <label class="text-[11px] font-black text-slate-300 uppercase tracking-wider">Horario Deseado *</label>
+                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Horario Deseado *</label>
                                 <select id="tt-hora" required
-                                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl text-sm font-medium text-white outline-none transition-all">
+                                    class="w-full px-4 py-3 bg-[#f7f8f6] border border-slate-200 focus:bg-white focus:border-[#7cb518] focus:ring-1 focus:ring-[#7cb518] rounded-xl text-sm font-medium text-slate-900 outline-none transition-all">
                                     <option value="07:00 AM">07:00 AM (Primera Salida)</option>
                                     <option value="07:30 AM">07:30 AM</option>
                                     <option value="08:00 AM" selected>08:00 AM</option>
@@ -1434,9 +1434,9 @@ export async function renderLandingPageModule(container) {
                         <!-- Número de Jugadores & Salida -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
-                                <label class="text-[11px] font-black text-slate-300 uppercase tracking-wider">Número de Jugadores</label>
+                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Número de Jugadores</label>
                                 <select id="tt-jugadores"
-                                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl text-sm font-medium text-white outline-none transition-all">
+                                    class="w-full px-4 py-3 bg-[#f7f8f6] border border-slate-200 focus:bg-white focus:border-[#7cb518] focus:ring-1 focus:ring-[#7cb518] rounded-xl text-sm font-medium text-slate-900 outline-none transition-all">
                                     <option value="1">1 Jugador (Individual)</option>
                                     <option value="2">2 Jugadores (Pareja)</option>
                                     <option value="3">3 Jugadores (Trío)</option>
@@ -1444,9 +1444,9 @@ export async function renderLandingPageModule(container) {
                                 </select>
                             </div>
                             <div class="space-y-1.5">
-                                <label class="text-[11px] font-black text-slate-300 uppercase tracking-wider">Hoyo de Salida</label>
+                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Hoyo de Salida</label>
                                 <select id="tt-hoyo"
-                                    class="w-full px-4 py-3 bg-slate-950 border border-slate-700 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl text-sm font-medium text-white outline-none transition-all">
+                                    class="w-full px-4 py-3 bg-[#f7f8f6] border border-slate-200 focus:bg-white focus:border-[#7cb518] focus:ring-1 focus:ring-[#7cb518] rounded-xl text-sm font-medium text-slate-900 outline-none transition-all">
                                     <option value="1" selected>Hoyo 1 (Salida Principal)</option>
                                     <option value="10">Hoyo 10 (Segunda Vuelta)</option>
                                 </select>
@@ -1454,19 +1454,19 @@ export async function renderLandingPageModule(container) {
                         </div>
 
                         <!-- Servicios Adicionales -->
-                        <div class="space-y-2 p-4 bg-slate-950/70 rounded-2xl border border-slate-800">
-                            <label class="text-[11px] font-black text-slate-300 uppercase tracking-wider block">Servicios Adicionales Requeridos</label>
+                        <div class="space-y-2 p-4 bg-[#f7f8f6] rounded-2xl border border-slate-200">
+                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Servicios Adicionales Requeridos</label>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                                <label class="flex items-center gap-2 text-xs font-bold text-slate-300 cursor-pointer p-2 rounded-xl hover:bg-slate-900 transition-colors">
-                                    <input type="checkbox" id="tt-carrito" class="w-4 h-4 rounded text-emerald-500 focus:ring-0 bg-slate-900 border-slate-700">
+                                <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer p-2 rounded-xl hover:bg-white transition-colors">
+                                    <input type="checkbox" id="tt-carrito" class="w-4 h-4 rounded accent-[#7cb518] border-slate-300">
                                     <span>🚗 Carrito de Golf</span>
                                 </label>
-                                <label class="flex items-center gap-2 text-xs font-bold text-slate-300 cursor-pointer p-2 rounded-xl hover:bg-slate-900 transition-colors">
-                                    <input type="checkbox" id="tt-caddie" class="w-4 h-4 rounded text-emerald-500 focus:ring-0 bg-slate-900 border-slate-700">
+                                <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer p-2 rounded-xl hover:bg-white transition-colors">
+                                    <input type="checkbox" id="tt-caddie" class="w-4 h-4 rounded accent-[#7cb518] border-slate-300">
                                     <span>🏌️‍♂️ Caddie</span>
                                 </label>
-                                <label class="flex items-center gap-2 text-xs font-bold text-slate-300 cursor-pointer p-2 rounded-xl hover:bg-slate-900 transition-colors">
-                                    <input type="checkbox" id="tt-palos" class="w-4 h-4 rounded text-emerald-500 focus:ring-0 bg-slate-900 border-slate-700">
+                                <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer p-2 rounded-xl hover:bg-white transition-colors">
+                                    <input type="checkbox" id="tt-palos" class="w-4 h-4 rounded accent-[#7cb518] border-slate-300">
                                     <span>⛳ Renta de Palos</span>
                                 </label>
                             </div>
@@ -1474,19 +1474,19 @@ export async function renderLandingPageModule(container) {
 
                         <!-- Comentarios / Notas -->
                         <div class="space-y-1.5">
-                            <label class="text-[11px] font-black text-slate-300 uppercase tracking-wider">Notas o Peticiones Especiales (Opcional)</label>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Notas o Peticiones Especiales (Opcional)</label>
                             <textarea id="tt-comentarios" rows="2" placeholder="Nombres de acompañantes, requerimientos especiales, etc."
-                                class="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl text-xs font-medium text-white placeholder-slate-500 outline-none transition-all"></textarea>
+                                class="w-full px-4 py-2.5 bg-[#f7f8f6] border border-slate-200 focus:bg-white focus:border-[#7cb518] focus:ring-1 focus:ring-[#7cb518] rounded-xl text-xs font-medium text-slate-900 placeholder-slate-400 outline-none transition-all"></textarea>
                         </div>
 
                         <!-- Submit Button -->
                         <div class="pt-2">
                             <button type="submit" id="tt-submit-btn"
-                                class="w-full px-6 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-sm uppercase tracking-wider shadow-xl shadow-emerald-500/20 transition-all flex items-center justify-center gap-3 hover:-translate-y-0.5 cursor-pointer">
+                                class="w-full px-6 py-4 bg-[#7cb518] hover:bg-[#6ca312] text-white font-bold rounded-full text-sm uppercase tracking-wider shadow-lg transition-all flex items-center justify-center gap-3 hover:-translate-y-0.5 cursor-pointer">
                                 <svg class="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
                                 <span>Confirmar Reserva & Enviar</span>
                             </button>
-                            <p class="text-[10px] text-slate-500 font-bold text-center mt-2 uppercase tracking-wider">
+                            <p class="text-[10px] text-slate-400 font-bold text-center mt-2.5 uppercase tracking-wider">
                                 🔒 Notifica de inmediato al Caddie Master / Starter del club
                             </p>
                         </div>
