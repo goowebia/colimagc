@@ -1,8 +1,20 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
-  RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
+
+  # Permitir acceso directo a upload.php y a la carpeta uploads
+  RewriteRule ^upload\.php$ - [L]
+  RewriteRule ^uploads/ - [L]
+
+  # Permitir sub-aplicaciones
+  RewriteRule ^torneo/ - [L]
+  RewriteRule ^oyes/ - [L]
+
+  # Si el archivo o directorio existe físicamente, servirlo directamente
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Redireccionar el resto a index.html (SPA)
+  RewriteRule ^ index.html [L]
 </IfModule>

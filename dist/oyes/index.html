@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Jueces Oye's • Club de Golf Colima</title>
+    <link rel="icon" type="image/jpeg" href="/assets/golcolima-KKJfatPr.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -28,6 +29,8 @@
             to { transform: translate(-50%, 0); opacity: 1; }
         }
     </style>
+  <script type="module" crossorigin src="/assets/oyes-UFeF4tra.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-P2Xu9kJm.js">
 </head>
 <body class="text-white min-h-screen flex flex-col justify-between items-center p-3 sm:p-5 antialiased selection:bg-emerald-500/30">
 
@@ -36,10 +39,10 @@
 
     <!-- HEADER LOGOS Y TITULO DISPOSITIVO MOVIL -->
     <header class="w-full max-w-sm text-center pt-2 pb-3">
-        <div class="inline-flex items-center justify-center gap-3 p-2 bg-white/5 border border-white/10 rounded-2xl mb-2 shadow-2xl backdrop-blur-md">
-            <img src="/assets/golcolima-KKJfatPr.jpg" alt="Club Colima" class="h-12 w-auto object-contain rounded-xl" onerror="this.style.display='none'">
-            <img src="/assets/logoclub-BXRAG4Hz.png" alt="Asociación" class="h-12 w-auto object-contain rounded-xl" onerror="this.style.display='none'">
-        </div>
+        <a href="/#admin" class="inline-flex items-center justify-center gap-3 p-2 bg-white/5 border border-white/10 rounded-2xl mb-2 shadow-2xl backdrop-blur-md hover:scale-105 transition-all" title="Ir al Panel Principal">
+            <img src="/assets/golcolima-KKJfatPr.jpg" alt="Club Colima" class="h-14 w-auto object-contain rounded-xl">
+            <img src="/assets/logoclub-BXRAG4Hz.png" alt="Asociación" class="h-14 w-auto object-contain rounded-xl">
+        </a>
         <h1 class="text-lg font-black uppercase tracking-tight text-white leading-tight">Club de Golf Colima</h1>
         <div class="flex items-center justify-center gap-1.5 mt-0.5">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -149,6 +152,5 @@
         Club de Golf Colima • Captura en Campo
     </footer>
 
-    <script src="app.js"></script>
 </body>
 </html>

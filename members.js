@@ -4,7 +4,7 @@ const SUPABASE_URL = (typeof import.meta !== 'undefined' && import.meta.env && i
 const SUPABASE_KEY = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6dG9seGdzYWt0cWluZG9pbXR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyNzQ4ODAsImV4cCI6MjEwMTg1MDg4MH0.E2GABiOMXYb5hEwE9ErIcJa6_LHkj9lJUglQVoiLl0M';
 
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
-const dbMembers = supabaseClient.schema('members');
+const dbMembers = supabaseClient.schema('colimaGC');
 const dbStarter = supabaseClient.schema('starter');
 
 let currentMembers = [];
@@ -271,8 +271,10 @@ function renderTableView(container, members, today) {
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 font-black text-slate-400 uppercase text-[11px]">
-                                        ${m.category || 'TITULAR'}
+                                    <td class="px-6 py-4 font-black uppercase text-[11px]">
+                                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${m.category === 'SOCIO ACCIONISTA' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' : 'bg-blue-500/15 text-blue-400 border border-blue-500/30'}">
+                                            ${m.category || 'SOCIO'}
+                                        </span>
                                     </td>
                                     <td class="px-6 py-4 text-center">
                                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${isPaid ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'}">
@@ -288,22 +290,22 @@ function renderTableView(container, members, today) {
                                     </td>
                                     <td class="px-6 py-4 text-right" onclick="event.stopPropagation()">
                                         <div class="flex items-center justify-end gap-1.5">
-                                            <button onclick="window.openMemberProfileModal('${m.id}')"
+                                            <button type="button" onclick="window.openMemberProfileModal('${m.id}')"
                                                 title="Ver Expediente WHS"
                                                 class="w-8 h-8 bg-slate-800 hover:bg-primary/20 hover:border-primary/40 border border-slate-700 rounded-lg flex items-center justify-center text-slate-400 hover:text-primary transition-all">
                                                 <span class="material-icons" style="font-size:16px">visibility</span>
                                             </button>
-                                            <button onclick="window.payMemberModal('${m.id}')"
+                                            <button type="button" onclick="window.payMemberModal('${m.id}')"
                                                 title="Registrar Pago"
                                                 class="w-8 h-8 bg-slate-800 hover:bg-emerald-500/20 hover:border-emerald-500/40 border border-slate-700 rounded-lg flex items-center justify-center text-slate-400 hover:text-emerald-400 transition-all">
                                                 <span class="material-icons" style="font-size:16px">payments</span>
                                             </button>
-                                            <button onclick="window.editMemberModal('${m.id}')"
+                                            <button type="button" onclick="window.editMemberModal('${m.id}')"
                                                 title="Editar Socio"
                                                 class="w-8 h-8 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg flex items-center justify-center text-slate-400 hover:text-white transition-all">
                                                 <span class="material-icons" style="font-size:16px">edit</span>
                                             </button>
-                                            <button onclick="window.deleteMemberModal('${m.id}', '${m.name.replace(/'/g, "\\'")}')"
+                                            <button type="button" onclick="window.deleteMemberModal('${m.id}', '${m.name.replace(/'/g, "\\'")}')"
                                                 title="Eliminar Socio"
                                                 class="w-8 h-8 bg-slate-800 hover:bg-rose-500/20 hover:border-rose-500/40 border border-slate-700 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-400 transition-all">
                                                 <span class="material-icons" style="font-size:16px">delete</span>
@@ -352,7 +354,9 @@ function renderCardsView(container, members, today) {
                             <div class="space-y-2 text-xs border-t border-slate-800 pt-4 mb-4">
                                 <div class="flex justify-between items-center">
                                     <span class="text-slate-500 font-bold">Categoría:</span>
-                                    <span class="font-black text-slate-300 uppercase">${m.category || 'TITULAR'}</span>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${m.category === 'SOCIO ACCIONISTA' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' : 'bg-blue-500/15 text-blue-400 border border-blue-500/30'}">
+                                        ${m.category || 'SOCIO'}
+                                    </span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-slate-500 font-bold">Vence Cuota:</span>
@@ -370,21 +374,21 @@ function renderCardsView(container, members, today) {
                         </div>
 
                         <div class="flex items-center gap-2 pt-2 border-t border-slate-800" onclick="event.stopPropagation()">
-                            <button onclick="window.payMemberModal('${m.id}')"
+                            <button type="button" onclick="window.payMemberModal('${m.id}')"
                                 class="flex-1 py-2.5 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-400 rounded-xl font-black text-xs uppercase flex items-center justify-center gap-1.5 transition-all">
                                 <span class="material-icons" style="font-size:15px">payments</span> Registrar Pago
                             </button>
-                            <button onclick="window.openMemberProfileModal('${m.id}')"
+                            <button type="button" onclick="window.openMemberProfileModal('${m.id}')"
                                 title="Ver Expediente WHS"
                                 class="w-9 h-9 bg-slate-800 hover:bg-primary/20 hover:border-primary/40 border border-slate-700 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary transition-all">
                                 <span class="material-icons" style="font-size:16px">visibility</span>
                             </button>
-                            <button onclick="window.editMemberModal('${m.id}')"
+                            <button type="button" onclick="window.editMemberModal('${m.id}')"
                                 title="Editar Socio"
                                 class="w-9 h-9 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl flex items-center justify-center text-slate-400 hover:text-white transition-all">
                                 <span class="material-icons" style="font-size:16px">edit</span>
                             </button>
-                            <button onclick="window.deleteMemberModal('${m.id}', '${m.name.replace(/'/g, "\\'")}')"
+                            <button type="button" onclick="window.deleteMemberModal('${m.id}', '${m.name.replace(/'/g, "\\'")}')"
                                 title="Eliminar Socio"
                                 class="w-9 h-9 bg-slate-800 hover:bg-rose-500/20 hover:border-rose-500/40 border border-slate-700 rounded-xl flex items-center justify-center text-slate-400 hover:text-rose-400 transition-all">
                                 <span class="material-icons" style="font-size:16px">delete</span>
@@ -396,19 +400,40 @@ function renderCardsView(container, members, today) {
 }
 
 // ================================================
+// MODAL MANAGEMENT & HELPERS
+// ================================================
+window.closeMemberModal = function() {
+    const modal = document.getElementById('modal-member-crud');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        modal.innerHTML = '';
+    }
+};
+
+function getOrCreateMemberModal() {
+    let modal = document.getElementById('modal-member-crud');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'modal-member-crud';
+        document.body.appendChild(modal);
+    }
+    modal.className = 'fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md animate-fade-in';
+    modal.style.display = 'flex';
+    modal.classList.remove('hidden');
+    // Se cierra únicamente al presionar la 'X' o 'Cancelar', no al dar clic afuera
+    modal.onclick = null;
+    return modal;
+}
+
+// ================================================
 // MODAL: FICHA / EXPEDIENTE DE SOCIO & HANDICAP WHS (Estilo SpeiHandicap)
 // ================================================
 window.openMemberProfileModal = async function(memberId) {
     const member = currentMembers.find(m => String(m.id) === String(memberId));
     if (!member) return;
 
-    let modal = document.getElementById('modal-member-crud');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'modal-member-crud';
-        modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md animate-fade-in';
-        document.body.appendChild(modal);
-    }
+    const modal = getOrCreateMemberModal();
 
     const today = new Date().toISOString().split('T')[0];
     const isPaid = member.paid_until && member.paid_until >= today && member.status === 'ACTIVE';
@@ -463,7 +488,7 @@ window.openMemberProfileModal = async function(memberId) {
     const memberPaymentsList = currentPayments.filter(p => String(p.member_id) === String(member.id));
 
     modal.innerHTML = `
-        <div class="w-full max-w-4xl bg-slate-950/95 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+        <div class="w-full max-w-4xl bg-slate-950/95 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]" onclick="event.stopPropagation()">
             <!-- Header Banner SpeiHandicap Style -->
             <div class="p-6 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/90">
                 <div class="flex items-center gap-4">
@@ -478,7 +503,7 @@ window.openMemberProfileModal = async function(memberId) {
                             </span>
                         </div>
                         <h3 class="font-black uppercase text-white text-xl leading-tight">${member.name}</h3>
-                        <p class="text-xs text-slate-400 font-bold uppercase mt-0.5">${member.category || 'SOCIO TITULAR'} · CLUB DE GOLF COLIMA</p>
+                        <p class="text-xs text-slate-400 font-bold uppercase mt-0.5">${member.category || 'SOCIO'} · CLUB DE GOLF COLIMA</p>
                     </div>
                 </div>
 
@@ -488,7 +513,7 @@ window.openMemberProfileModal = async function(memberId) {
                         <p class="text-2xl font-black text-rose-500 mt-0.5">${hi.toFixed(1)}</p>
                         <p class="text-[9px] font-bold text-slate-500 uppercase">Low H.I.: <span class="text-amber-400 font-black">${lowHI}</span></p>
                     </div>
-                    <button onclick="document.getElementById('modal-member-crud').classList.add('hidden')" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-all">
+                    <button type="button" onclick="window.closeMemberModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-all" title="Cerrar">
                         <span class="material-icons" style="font-size:18px">close</span>
                     </button>
                 </div>
@@ -508,7 +533,7 @@ window.openMemberProfileModal = async function(memberId) {
             <div class="p-6 overflow-y-auto custom-scrollbar space-y-6 flex-1">
                 <!-- TAB WHS HANDICAP -->
                 <div id="modal-content-whs" class="space-y-6">
-                    <!-- Course Handicap Per Tee Selector (Estilo SpeiHandicap Badges) -->
+                    <!-- Course Handicap Per Tee Selector -->
                     <div>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Calculadora de Handicap de Campo por Marca de Salida (Tees)</p>
                         <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
@@ -522,7 +547,7 @@ window.openMemberProfileModal = async function(memberId) {
                         </div>
                     </div>
 
-                    <!-- 20 Recent WHS Rounds Table (Estilo SpeiHandicap) -->
+                    <!-- 20 Recent WHS Rounds Table -->
                     <div>
                         <div class="flex items-center justify-between mb-3">
                             <h4 class="font-black text-white uppercase text-xs tracking-wider flex items-center gap-2">
@@ -569,7 +594,7 @@ window.openMemberProfileModal = async function(memberId) {
                                                     </td>
                                                     <td class="px-4 py-3 text-right">
                                                         ${s.hole_scores ? `
-                                                            <button onclick="window.toggleHoleDetail('${s.id}')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-[10px] font-bold text-slate-300 transition-all">
+                                                            <button type="button" onclick="window.toggleHoleDetail('${s.id}')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-[10px] font-bold text-slate-300 transition-all">
                                                                 Ver Hoyos
                                                             </button>
                                                         ` : '—'}
@@ -605,7 +630,7 @@ window.openMemberProfileModal = async function(memberId) {
                         <h4 class="font-black text-white uppercase text-xs tracking-wider flex items-center gap-2">
                             <span class="material-icons text-emerald-400 text-sm">history</span> Historial de Pagos Recaudados
                         </h4>
-                        <button onclick="document.getElementById('modal-member-crud').classList.add('hidden'); window.payMemberModal('${member.id}');"
+                        <button type="button" onclick="window.payMemberModal('${member.id}');"
                             class="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-400 rounded-lg font-black text-[10px] uppercase flex items-center gap-1 transition-all">
                             <span class="material-icons" style="font-size:14px">add</span> Registrar Nuevo Pago
                         </button>
@@ -647,16 +672,16 @@ window.openMemberProfileModal = async function(memberId) {
             <!-- Footer Actions -->
             <div class="p-5 border-t border-slate-800 bg-slate-900 flex items-center justify-between gap-3">
                 <div class="flex gap-2">
-                    <button onclick="document.getElementById('modal-member-crud').classList.add('hidden'); window.editMemberModal('${member.id}');"
+                    <button type="button" onclick="window.editMemberModal('${member.id}');"
                         class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-black text-xs uppercase flex items-center gap-1.5 transition-all">
                         <span class="material-icons" style="font-size:16px">edit</span> Editar Datos
                     </button>
-                    <button onclick="document.getElementById('modal-member-crud').classList.add('hidden'); window.deleteMemberModal('${member.id}', '${member.name.replace(/'/g, "\\'")}');"
+                    <button type="button" onclick="window.deleteMemberModal('${member.id}', '${member.name.replace(/'/g, "\\'")}');"
                         class="px-4 py-2.5 bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded-xl font-black text-xs uppercase flex items-center gap-1.5 transition-all">
                         <span class="material-icons" style="font-size:16px">delete</span> Dar de Baja
                     </button>
                 </div>
-                <button onclick="document.getElementById('modal-member-crud').classList.add('hidden')"
+                <button type="button" onclick="window.closeMemberModal()"
                     class="px-6 py-2.5 bg-primary text-slate-900 rounded-xl font-black text-xs uppercase hover:bg-primary/90 transition-all">
                     Cerrar
                 </button>
@@ -682,8 +707,6 @@ window.openMemberProfileModal = async function(memberId) {
         contentPay.classList.remove('hidden');
         contentWhs.classList.add('hidden');
     };
-
-    modal.classList.remove('hidden');
 };
 
 window.toggleHoleDetail = function(scoreId) {
@@ -691,23 +714,50 @@ window.toggleHoleDetail = function(scoreId) {
     if (row) row.classList.toggle('hidden');
 };
 
+// Helper: Get strictly next available member number
+async function getNextAvailableMemberNumber() {
+    let maxNum = 100;
+    (currentMembers || []).forEach(m => {
+        if (m.member_number) {
+            const match = m.member_number.match(/\d+/);
+            if (match) {
+                const n = parseInt(match[0], 10);
+                if (!isNaN(n) && n > maxNum) maxNum = n;
+            }
+        }
+    });
+
+    try {
+        const { data: dbNums } = await dbMembers.from('members').select('member_number');
+        if (dbNums && dbNums.length > 0) {
+            dbNums.forEach(m => {
+                if (m.member_number) {
+                    const match = m.member_number.match(/\d+/);
+                    if (match) {
+                        const n = parseInt(match[0], 10);
+                        if (!isNaN(n) && n > maxNum) maxNum = n;
+                    }
+                }
+            });
+        }
+    } catch (e) {
+        console.warn('Error fetching member numbers from DB:', e);
+    }
+
+    return `SOC-${String(maxNum + 1).padStart(3, '0')}`;
+}
+
 // ================================================
 // MODAL: NUEVO SOCIO
 // ================================================
-function openNewMemberModal() {
-    let modal = document.getElementById('modal-member-crud');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'modal-member-crud';
-        modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md animate-fade-in';
-        document.body.appendChild(modal);
-    }
+async function openNewMemberModal() {
+    const modal = getOrCreateMemberModal();
 
-    const nextNum = `SOC-${String(currentMembers.length + 101).padStart(3, '0')}`;
+    const nextNum = await getNextAvailableMemberNumber();
     const today = new Date().toISOString().split('T')[0];
 
     modal.innerHTML = `
-        <div class="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+        <div class="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col" onclick="event.stopPropagation()">
             <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-950/40">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary">
@@ -718,7 +768,7 @@ function openNewMemberModal() {
                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Dar de alta en el padrón</p>
                     </div>
                 </div>
-                <button onclick="document.getElementById('modal-member-crud').classList.add('hidden')" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-all">
+                <button type="button" onclick="window.closeMemberModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-all" title="Cerrar">
                     <span class="material-icons" style="font-size:18px">close</span>
                 </button>
             </div>
@@ -732,10 +782,8 @@ function openNewMemberModal() {
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Categoría</label>
                         <select id="m-cat" class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs font-black text-white focus:outline-none focus:border-primary">
-                            <option value="SOCIO TITULAR">SOCIO TITULAR</option>
-                            <option value="SOCIO DAMA">SOCIO DAMA</option>
-                            <option value="SOCIO JUVENIL">SOCIO JUVENIL</option>
-                            <option value="SOCIO HONORARIO">SOCIO HONORARIO</option>
+                            <option value="SOCIO ACCIONISTA">SOCIO ACCIONISTA</option>
+                            <option value="SOCIO">SOCIO</option>
                         </select>
                     </div>
                 </div>
@@ -777,14 +825,12 @@ function openNewMemberModal() {
                 </div>
 
                 <div class="pt-4 border-t border-slate-800 flex justify-end gap-3">
-                    <button type="button" onclick="document.getElementById('modal-member-crud').classList.add('hidden')" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-black text-xs uppercase">Cancelar</button>
+                    <button type="button" onclick="window.closeMemberModal()" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-black text-xs uppercase">Cancelar</button>
                     <button type="submit" class="px-6 py-3 bg-primary text-slate-900 rounded-xl font-black text-xs uppercase hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">Guardar Socio</button>
                 </div>
             </form>
         </div>
     `;
-
-    modal.classList.remove('hidden');
 
     document.getElementById('form-save-member').onsubmit = async (e) => {
         e.preventDefault();
@@ -800,14 +846,37 @@ function openNewMemberModal() {
             status: 'ACTIVE'
         };
 
-        const { error } = await dbMembers.from('members').insert([payload]);
+        let { error } = await dbMembers.from('members').insert([payload]);
         if (error) {
-            window.showNotification('Error', 'No se pudo registrar el socio: ' + error.message, 'error');
-            return;
+            if (error.message && (error.message.includes('duplicate key') || error.code === '23505')) {
+                const suggested = await getNextAvailableMemberNumber();
+                window.showNotification?.('Número de Socio Duplicado', `El número "${payload.member_number}" ya existe en el padrón. Te sugerimos "${suggested}".`, 'error');
+                const numInput = document.getElementById('m-num');
+                if (numInput) {
+                    numInput.value = suggested;
+                    numInput.focus();
+                }
+                return;
+            }
+            const { error: err2 } = await dbStarter.from('members').insert([payload]);
+            if (err2) {
+                if (err2.message && (err2.message.includes('duplicate key') || err2.code === '23505')) {
+                    const suggested = await getNextAvailableMemberNumber();
+                    window.showNotification?.('Número de Socio Duplicado', `El número "${payload.member_number}" ya existe en el padrón. Te sugerimos "${suggested}".`, 'error');
+                    const numInput = document.getElementById('m-num');
+                    if (numInput) {
+                        numInput.value = suggested;
+                        numInput.focus();
+                    }
+                    return;
+                }
+                window.showNotification?.('Error', 'No se pudo registrar el socio: ' + (error.message || err2.message), 'error');
+                return;
+            }
         }
 
-        window.showNotification('¡Socio Guardado!', `Se registró a ${payload.name} correctamente.`, 'success');
-        modal.classList.add('hidden');
+        window.showNotification?.('¡Socio Guardado!', `Se registró a ${payload.name} correctamente con el expediente ${payload.member_number}.`, 'success');
+        window.closeMemberModal();
         await loadMembersData();
     };
 }
@@ -817,18 +886,12 @@ window.payMemberModal = function(memberId) {
     const member = currentMembers.find(m => String(m.id) === String(memberId));
     if (!member) return;
 
-    let modal = document.getElementById('modal-member-crud');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'modal-member-crud';
-        modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md animate-fade-in';
-        document.body.appendChild(modal);
-    }
+    const modal = getOrCreateMemberModal();
 
     const currentPaidDate = member.paid_until ? new Date(member.paid_until + 'T00:00:00') : new Date();
 
     modal.innerHTML = `
-        <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+        <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col" onclick="event.stopPropagation()">
             <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-950/40">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
@@ -839,7 +902,7 @@ window.payMemberModal = function(memberId) {
                         <p class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">${member.name} (#${member.member_number})</p>
                     </div>
                 </div>
-                <button onclick="document.getElementById('modal-member-crud').classList.add('hidden')" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-all">
+                <button type="button" onclick="window.closeMemberModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-all" title="Cerrar">
                     <span class="material-icons" style="font-size:18px">close</span>
                 </button>
             </div>
@@ -882,14 +945,12 @@ window.payMemberModal = function(memberId) {
                 </div>
 
                 <div class="pt-4 border-t border-slate-800 flex justify-end gap-3">
-                    <button type="button" onclick="document.getElementById('modal-member-crud').classList.add('hidden')" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-black text-xs uppercase">Cancelar</button>
+                    <button type="button" onclick="window.closeMemberModal()" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-black text-xs uppercase">Cancelar</button>
                     <button type="submit" class="px-6 py-3 bg-emerald-500 text-slate-950 rounded-xl font-black text-xs uppercase hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/20">Aplicar Pago</button>
                 </div>
             </form>
         </div>
     `;
-
-    modal.classList.remove('hidden');
 
     const updateCalculatedDate = () => {
         const addM = parseInt(document.getElementById('pay-months').value) || 1;
@@ -925,7 +986,7 @@ window.payMemberModal = function(memberId) {
             .eq('id', member.id);
 
         if (mErr) {
-            window.showNotification('Error', 'No se pudo actualizar la cuota del socio: ' + mErr.message, 'error');
+            window.showNotification?.('Error', 'No se pudo actualizar la cuota del socio: ' + mErr.message, 'error');
             return;
         }
 
@@ -938,26 +999,23 @@ window.payMemberModal = function(memberId) {
             notes: notes
         }]);
 
-        window.showNotification('¡Pago Registrado!', `El socio ${member.name} está al corriente hasta ${newPaidUntil}.`, 'success');
-        modal.classList.add('hidden');
+        window.showNotification?.('¡Pago Registrado!', `El socio ${member.name} está al corriente hasta ${newPaidUntil}.`, 'success');
+        window.closeMemberModal();
         await loadMembersData();
     };
 };
 
 window.editMemberModal = function(memberId) {
     const member = currentMembers.find(m => String(m.id) === String(memberId));
-    if (!member) return;
-
-    let modal = document.getElementById('modal-member-crud');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'modal-member-crud';
-        modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md animate-fade-in';
-        document.body.appendChild(modal);
+    if (!member) {
+        console.warn('Member not found with id:', memberId);
+        return;
     }
 
+    const modal = getOrCreateMemberModal();
+
     modal.innerHTML = `
-        <div class="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+        <div class="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col" onclick="event.stopPropagation()">
             <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-950/40">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
@@ -968,7 +1026,7 @@ window.editMemberModal = function(memberId) {
                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">${member.name}</p>
                     </div>
                 </div>
-                <button onclick="document.getElementById('modal-member-crud').classList.add('hidden')" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-all">
+                <button type="button" onclick="window.closeMemberModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-all" title="Cerrar">
                     <span class="material-icons" style="font-size:18px">close</span>
                 </button>
             </div>
@@ -977,22 +1035,20 @@ window.editMemberModal = function(memberId) {
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5"># Socio</label>
-                        <input id="em-num" type="text" value="${member.member_number}" required class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs font-black text-white focus:outline-none focus:border-primary">
+                        <input id="em-num" type="text" value="${member.member_number || ''}" required class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs font-black text-white focus:outline-none focus:border-primary">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Categoría</label>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Tipo de Socio</label>
                         <select id="em-cat" class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs font-black text-white focus:outline-none focus:border-primary">
-                            <option value="SOCIO TITULAR" ${member.category==='SOCIO TITULAR'?'selected':''}>SOCIO TITULAR</option>
-                            <option value="SOCIO DAMA" ${member.category==='SOCIO DAMA'?'selected':''}>SOCIO DAMA</option>
-                            <option value="SOCIO JUVENIL" ${member.category==='SOCIO JUVENIL'?'selected':''}>SOCIO JUVENIL</option>
-                            <option value="SOCIO HONORARIO" ${member.category==='SOCIO HONORARIO'?'selected':''}>SOCIO HONORARIO</option>
+                            <option value="SOCIO ACCIONISTA" ${(member.category === 'SOCIO ACCIONISTA' || member.category === 'SOCIO HONORARIO' || member.category === 'TITULAR') ? 'selected' : ''}>SOCIO ACCIONISTA</option>
+                            <option value="SOCIO" ${(member.category === 'SOCIO' || member.category === 'MEMBRESÍA ANUAL' || member.category === 'MEMBRESÍA TEMPORAL') ? 'selected' : ''}>SOCIO</option>
                         </select>
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Nombre Completo</label>
-                    <input id="em-name" type="text" value="${member.name}" required class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs font-black text-white focus:outline-none focus:border-primary">
+                    <input id="em-name" type="text" value="${member.name || ''}" required class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs font-black text-white focus:outline-none focus:border-primary">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -1027,14 +1083,14 @@ window.editMemberModal = function(memberId) {
                 </div>
 
                 <div class="pt-4 border-t border-slate-800 flex justify-end gap-3">
-                    <button type="button" onclick="document.getElementById('modal-member-crud').classList.add('hidden')" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-black text-xs uppercase">Cancelar</button>
-                    <button type="submit" class="px-6 py-3 bg-blue-500 text-white rounded-xl font-black text-xs uppercase hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20">Guardar Cambios</button>
+                    <button type="button" onclick="window.closeMemberModal()" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-black text-xs uppercase">Cancelar</button>
+                    <button type="submit" class="px-6 py-3 bg-blue-500 text-white rounded-xl font-black text-xs uppercase hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20 flex items-center gap-1.5">
+                        <span class="material-icons text-sm">save</span> Guardar Cambios
+                    </button>
                 </div>
             </form>
         </div>
     `;
-
-    modal.classList.remove('hidden');
 
     document.getElementById('form-edit-member').onsubmit = async (e) => {
         e.preventDefault();
@@ -1049,30 +1105,39 @@ window.editMemberModal = function(memberId) {
             current_handicap: parseFloat(document.getElementById('em-hdcp').value) || 0.0
         };
 
-        const { error } = await dbMembers.from('members').update(payload).eq('id', member.id);
-        if (error) {
-            window.showNotification('Error', 'No se pudieron guardar los cambios: ' + error.message, 'error');
-            return;
-        }
+        try {
+            let { error } = await dbMembers.from('members').update(payload).eq('id', member.id);
+            if (error) {
+                const { error: err2 } = await dbStarter.from('members').update(payload).eq('id', member.id);
+                if (err2) {
+                    window.showNotification?.('Error', 'No se pudieron guardar los cambios: ' + error.message, 'error');
+                    return;
+                }
+            }
 
-        window.showNotification('¡Socio Actualizado!', `Se modificaron los datos de ${payload.name}.`, 'success');
-        modal.classList.add('hidden');
-        await loadMembersData();
+            window.showNotification?.('¡Socio Actualizado!', `Se modificaron los datos de ${payload.name}.`, 'success');
+            window.closeMemberModal();
+            await loadMembersData();
+        } catch (err) {
+            console.error('Error updating member:', err);
+            window.showNotification?.('Error', 'No se pudieron guardar los cambios: ' + err.message, 'error');
+        }
     };
 };
 
 window.deleteMemberModal = function(memberId, memberName) {
-    window.showNotification(
+    window.showNotification?.(
         'Dar de Baja Socio',
         `¿Estás seguro de dar de baja al socio ${memberName}? Esto eliminará su registro de membresía.`,
         'confirm',
         async () => {
             const { error } = await dbMembers.from('members').delete().eq('id', memberId);
             if (error) {
-                window.showNotification('Error', 'No se pudo eliminar el socio: ' + error.message, 'error');
+                window.showNotification?.('Error', 'No se pudo eliminar el socio: ' + error.message, 'error');
                 return;
             }
-            window.showNotification('Socio Eliminado', `Se dio de baja a ${memberName}.`, 'success');
+            window.showNotification?.('Socio Eliminado', `Se dio de baja a ${memberName}.`, 'success');
+            window.closeMemberModal();
             await loadMembersData();
         }
     );

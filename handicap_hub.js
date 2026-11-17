@@ -4,7 +4,7 @@ const SUPABASE_URL = (typeof import.meta !== 'undefined' && import.meta.env && i
 const SUPABASE_KEY = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6dG9seGdzYWt0cWluZG9pbXR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyNzQ4ODAsImV4cCI6MjEwMTg1MDg4MH0.E2GABiOMXYb5hEwE9ErIcJa6_LHkj9lJUglQVoiLl0M';
 
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
-const dbMembers = supabaseClient.schema('members');
+const dbMembers = supabaseClient.schema('colimaGC');
 const dbStarter = supabaseClient.schema('starter');
 
 let allMembers = [];
@@ -138,14 +138,68 @@ function computeAllMemberTeeHandicaps(hi) {
 // ================================================
 // TAB 1: CLUB HANDICAP (TABLA GENERAL ESTILO SPEIHANDICAP)
 // ================================================
+function highlightMatch(text, query) {
+    if (!query) return text;
+    try {
+        const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(${escaped})`, 'gi');
+        return text.replace(regex, '<span class="text-amber-400 font-black underline">$1</span>');
+    } catch {
+        return text;
+    }
+}
+
+function getFilteredClubMembers() {
+    if (!clubSearchQuery) return allMembers;
+    return allMembers.filter(m => {
+        return `${m.name} ${m.member_number}`.toLowerCase().includes(clubSearchQuery);
+    });
+}
+
+function renderClubHandicapRowsHTML(membersList) {
+    if (!membersList || membersList.length === 0) {
+        return `
+            <tr>
+                <td colspan="6" class="px-6 py-12 text-center text-slate-500 font-bold uppercase text-xs">
+                    <div class="flex flex-col items-center justify-center gap-2">
+                        <span class="material-icons text-slate-600 text-3xl">person_search</span>
+                        <span>No se encontraron jugadores que coincidan con "${clubSearchQuery}"</span>
+                    </div>
+                </td>
+            </tr>`;
+    }
+
+    return membersList.map(m => {
+        const hi = parseFloat(m.current_handicap || 0);
+        const [chB, chD, chP] = computeAllMemberTeeHandicaps(hi);
+
+        return `
+            <tr onclick="window.viewMemberWHSProfile('${m.id}')"
+                class="hover:bg-slate-800/50 transition-colors cursor-pointer group">
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <span class="px-2 py-0.5 bg-slate-800 text-slate-400 border border-slate-700 font-black text-[10px] rounded-md">#${m.member_number}</span>
+                        <span class="font-black text-white uppercase group-hover:text-amber-400 transition-colors text-sm">${m.name}</span>
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-center font-black text-rose-500 text-base">${formatIndexVal(hi)}</td>
+                <td class="px-6 py-4 text-center font-black text-slate-200 text-base">${chB}</td>
+                <td class="px-6 py-4 text-center font-black text-amber-400 text-base">${chD}</td>
+                <td class="px-6 py-4 text-center font-black text-rose-400 text-base">${chP}</td>
+                <td class="px-4 py-4 text-right" onclick="event.stopPropagation()">
+                    <button onclick="window.viewMemberWHSProfile('${m.id}')" class="px-3 py-1.5 bg-slate-800 hover:bg-amber-500/20 hover:border-amber-500/40 border border-slate-700 rounded-xl text-[11px] font-black text-amber-400 transition-all">
+                        Ver Tarjetas ➔
+                    </button>
+                </td>
+            </tr>`;
+    }).join('');
+}
+
 function renderClubHandicapTable() {
     const container = document.getElementById('whs-hub-content');
     if (!container) return;
 
-    const filtered = allMembers.filter(m => {
-        if (!clubSearchQuery) return true;
-        return `${m.name} ${m.member_number}`.toLowerCase().includes(clubSearchQuery);
-    });
+    const filtered = getFilteredClubMembers();
 
     container.innerHTML = `
         <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 animate-fade-in">
@@ -162,9 +216,15 @@ function renderClubHandicapTable() {
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <div class="relative w-full sm:w-72">
-                        <span class="material-icons absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm">search</span>
-                        <input id="club-search-input" type="text" value="${clubSearchQuery}" placeholder="Buscar jugador..." class="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-amber-400">
+                    <div class="relative w-full sm:w-80" id="club-search-wrapper">
+                        <span class="material-icons absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm pointer-events-none">search</span>
+                        <input id="club-search-input" type="text" value="${clubSearchQuery}" autocomplete="off" placeholder="Buscar jugador..." class="w-full pl-10 pr-9 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-amber-400">
+                        <button id="club-search-clear" type="button" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-all ${clubSearchQuery ? '' : 'hidden'}" title="Limpiar búsqueda">
+                            <span class="material-icons text-sm">close</span>
+                        </button>
+                        <!-- Autocomplete Suggestions Menu -->
+                        <div id="club-search-suggestions" class="absolute left-0 right-0 top-full mt-1.5 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-50 hidden max-h-64 overflow-y-auto custom-scrollbar">
+                        </div>
                     </div>
                     <button onclick="window.print()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-xl font-black text-xs uppercase flex items-center gap-1.5 transition-all shrink-0">
                         <span class="material-icons" style="font-size:16px">print</span> Imprimir
@@ -186,31 +246,8 @@ function renderClubHandicapTable() {
                                 <th class="px-4 py-4 text-right">Consulta WHS</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-800/60 font-bold">
-                            ${filtered.map(m => {
-                                const hi = parseFloat(m.current_handicap || 0);
-                                const [chB, chD, chP] = computeAllMemberTeeHandicaps(hi);
-
-                                return `
-                                    <tr onclick="window.viewMemberWHSProfile('${m.id}')"
-                                        class="hover:bg-slate-800/50 transition-colors cursor-pointer group">
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-3">
-                                                <span class="px-2 py-0.5 bg-slate-800 text-slate-400 border border-slate-700 font-black text-[10px] rounded-md">#${m.member_number}</span>
-                                                <span class="font-black text-white uppercase group-hover:text-amber-400 transition-colors text-sm">${m.name}</span>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 text-center font-black text-rose-500 text-base">${formatIndexVal(hi)}</td>
-                                        <td class="px-6 py-4 text-center font-black text-slate-200 text-base">${chB}</td>
-                                        <td class="px-6 py-4 text-center font-black text-amber-400 text-base">${chD}</td>
-                                        <td class="px-6 py-4 text-center font-black text-rose-400 text-base">${chP}</td>
-                                        <td class="px-4 py-4 text-right" onclick="event.stopPropagation()">
-                                            <button onclick="window.viewMemberWHSProfile('${m.id}')" class="px-3 py-1.5 bg-slate-800 hover:bg-amber-500/20 hover:border-amber-500/40 border border-slate-700 rounded-xl text-[11px] font-black text-amber-400 transition-all">
-                                                Ver Tarjetas ➔
-                                            </button>
-                                        </td>
-                                    </tr>`;
-                            }).join('')}
+                        <tbody id="club-handicap-tbody" class="divide-y divide-slate-800/60 font-bold">
+                            ${renderClubHandicapRowsHTML(filtered)}
                         </tbody>
                     </table>
                 </div>
@@ -218,10 +255,118 @@ function renderClubHandicapTable() {
         </div>
     `;
 
-    document.getElementById('club-search-input').oninput = (e) => {
-        clubSearchQuery = e.target.value.toLowerCase().trim();
-        renderClubHandicapTable();
+    const searchInput = document.getElementById('club-search-input');
+    const clearBtn = document.getElementById('club-search-clear');
+    const suggestionsEl = document.getElementById('club-search-suggestions');
+    const tbody = document.getElementById('club-handicap-tbody');
+
+    const updateRows = () => {
+        const filteredList = getFilteredClubMembers();
+        if (tbody) {
+            tbody.innerHTML = renderClubHandicapRowsHTML(filteredList);
+        }
     };
+
+    const updateSuggestions = (query) => {
+        if (!suggestionsEl) return;
+        const q = (query || '').toLowerCase().trim();
+        if (!q) {
+            suggestionsEl.innerHTML = '';
+            suggestionsEl.classList.add('hidden');
+            return;
+        }
+
+        const matches = allMembers.filter(m =>
+            `${m.name} ${m.member_number}`.toLowerCase().includes(q)
+        ).slice(0, 8);
+
+        if (matches.length === 0) {
+            suggestionsEl.innerHTML = `
+                <div class="px-4 py-3 text-slate-500 text-xs font-bold text-center">
+                    No hay sugerencias para "${q}"
+                </div>`;
+            suggestionsEl.classList.remove('hidden');
+            return;
+        }
+
+        suggestionsEl.innerHTML = matches.map(m => {
+            const hi = parseFloat(m.current_handicap || 0);
+            const safeName = m.name.replace(/"/g, '&quot;');
+            const highlightedName = highlightMatch(m.name, q);
+            return `
+                <div class="suggestion-item px-4 py-2.5 hover:bg-slate-800 cursor-pointer flex items-center justify-between border-b border-slate-800/60 last:border-0 transition-colors"
+                     data-name="${safeName}">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 text-amber-400 font-black text-[9px] rounded">#${m.member_number}</span>
+                        <span class="font-black text-white text-xs uppercase">${highlightedName}</span>
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-400">Index: <strong class="text-rose-400">${formatIndexVal(hi)}</strong></span>
+                </div>
+            `;
+        }).join('');
+
+        suggestionsEl.classList.remove('hidden');
+
+        suggestionsEl.querySelectorAll('.suggestion-item').forEach(item => {
+            item.onclick = (ev) => {
+                ev.stopPropagation();
+                const name = item.dataset.name;
+                if (searchInput) searchInput.value = name;
+                clubSearchQuery = name.toLowerCase().trim();
+                if (clearBtn) clearBtn.classList.remove('hidden');
+                updateRows();
+                suggestionsEl.classList.add('hidden');
+                if (searchInput) searchInput.focus();
+            };
+        });
+    };
+
+    if (searchInput) {
+        searchInput.oninput = (e) => {
+            const val = e.target.value;
+            clubSearchQuery = val.toLowerCase().trim();
+            if (clearBtn) {
+                if (val) clearBtn.classList.remove('hidden');
+                else clearBtn.classList.add('hidden');
+            }
+            updateRows();
+            updateSuggestions(val);
+        };
+
+        searchInput.onfocus = () => {
+            if (searchInput.value.trim()) {
+                updateSuggestions(searchInput.value);
+            }
+        };
+
+        searchInput.onkeydown = (e) => {
+            if (e.key === 'Escape') {
+                if (suggestionsEl) suggestionsEl.classList.add('hidden');
+            }
+        };
+    }
+
+    if (clearBtn) {
+        clearBtn.onclick = (e) => {
+            e.stopPropagation();
+            if (searchInput) {
+                searchInput.value = '';
+                searchInput.focus();
+            }
+            clubSearchQuery = '';
+            clearBtn.classList.add('hidden');
+            if (suggestionsEl) suggestionsEl.classList.add('hidden');
+            updateRows();
+        };
+    }
+
+    // Cerrar sugerencias al hacer clic fuera
+    document.addEventListener('click', (e) => {
+        const wrapper = document.getElementById('club-search-wrapper');
+        if (wrapper && !wrapper.contains(e.target)) {
+            if (suggestionsEl) suggestionsEl.classList.add('hidden');
+        }
+    });
 }
 
 window.viewMemberWHSProfile = async function(memberId) {

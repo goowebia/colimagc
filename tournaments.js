@@ -103,7 +103,30 @@ async function renderTournamentsGrid(container) {
 
   document.getElementById('btn-create-tournament').onclick = () => window._showCreateTournamentModal();
 
-  const { data: rawTournaments, error } = await supabaseTarget.from('tournaments').select('*').order('created_at', { ascending: false });
+  function parseTournamentDate(t) {
+    if (t.date) return new Date(t.date);
+    if (t.config?.date) return new Date(t.config.date);
+    const name = t.name || '';
+    const months = {
+      ene: 0, enero: 0, feb: 1, febrero: 1, mar: 2, marzo: 2, abr: 3, abril: 3,
+      may: 4, mayo: 4, jun: 5, junio: 5, jul: 6, julio: 6, ago: 7, agosto: 7,
+      sep: 8, sept: 8, septiembre: 8, oct: 9, octubre: 9, nov: 10, noviembre: 10,
+      dic: 11, diciembre: 11
+    };
+    const regex = /(\d{1,2})\s*[\/\-]?[\s]*(ene|enero|feb|febrero|mar|marzo|abr|abril|may|mayo|jun|junio|jul|julio|ago|agosto|sep|sept|septiembre|oct|octubre|nov|noviembre|dic|diciembre)/i;
+    const m = name.match(regex);
+    if (m) {
+      const day = parseInt(m[1]);
+      const monthKey = m[2].toLowerCase();
+      const month = months[monthKey] !== undefined ? months[monthKey] : 0;
+      const yearMatch = name.match(/(?:20)?(2[5-9])/);
+      const year = yearMatch ? 2000 + parseInt(yearMatch[1]) : 2026;
+      return new Date(year, month, day);
+    }
+    return new Date(t.created_at || Date.now());
+  }
+
+  const { data: rawTournaments, error } = await supabaseTarget.from('tournaments').select('*');
 
   // Filter for Collaborators
   let tournaments = rawTournaments;
@@ -127,37 +150,68 @@ async function renderTournamentsGrid(container) {
     return;
   }
 
-  grid.innerHTML = tournaments.map(t => `
-    <div class="group bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-8 rounded-[3rem] hover:border-primary/50 hover:-translate-y-2 transition-all cursor-pointer shadow-sm hover:shadow-2xl overflow-hidden relative" onclick="window._openTournament('${t.id}', '${t.name.replace(/'/g, "\\'")}')">
-      <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-[3rem] -mr-8 -mt-8 group-hover:bg-primary/20 transition-all"></div>
-      <div class="flex justify-between items-start mb-8 relative z-10">
-        <div class="w-16 h-16 bg-primary text-slate-900 rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30">
-          <span class="material-icons text-3xl">emoji_events</span>
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Sort chronologically by real tournament date
+  const sortedTournaments = [...tournaments].sort((a, b) => parseTournamentDate(a) - parseTournamentDate(b));
+
+  grid.innerHTML = sortedTournaments.map(t => {
+    const tDate = parseTournamentDate(t);
+    const isPast = tDate < today;
+    const formattedDate = tDate.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
+    const visorUrl = `${window.location.origin}/torneo/?id=${t.id}`;
+
+    return `
+    <div class="group bg-white dark:bg-slate-900 border ${isPast ? 'border-slate-200 dark:border-slate-800 hover:border-amber-500/50' : 'border-emerald-500/30 dark:border-emerald-500/30 hover:border-emerald-400 shadow-lg shadow-emerald-500/5'} p-8 rounded-[3rem] hover:-translate-y-1.5 transition-all cursor-pointer shadow-sm hover:shadow-2xl overflow-hidden relative flex flex-col justify-between" onclick="window._openTournament('${t.id}', '${t.name.replace(/'/g, "\\'")}')">
+      <div class="absolute top-0 right-0 w-28 h-28 ${isPast ? 'bg-amber-500/5 group-hover:bg-amber-500/10' : 'bg-emerald-500/5 group-hover:bg-emerald-500/20'} rounded-bl-[3rem] -mr-8 -mt-8 transition-all pointer-events-none"></div>
+      
+      <div>
+        <div class="flex justify-between items-start mb-6 relative z-10">
+          <div class="flex items-center gap-3">
+            <div class="w-14 h-14 ${isPast ? 'bg-amber-500/10 text-amber-400 border border-amber-500/25' : 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/30'} rounded-2xl flex items-center justify-center">
+              <span class="material-icons text-3xl">${isPast ? 'history' : 'emoji_events'}</span>
+            </div>
+            <div>
+              <span class="px-2.5 py-1 rounded-full ${isPast ? 'bg-amber-500/15 border border-amber-500/30 text-amber-400' : 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300'} text-[10px] font-black uppercase tracking-wider inline-flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full ${isPast ? 'bg-amber-400' : 'bg-emerald-400 animate-pulse'}"></span>
+                ${isPast ? 'Finalizado' : 'Próximo Torneo'}
+              </span>
+              <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">${formattedDate}</p>
+            </div>
+          </div>
+          
+          <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-all z-20">
+            <a href="${visorUrl}" target="_blank" onclick="event.stopPropagation();" title="Abrir Visor Live" class="w-9 h-9 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-400 hover:text-emerald-400 transition-all shadow-sm">
+              <span class="material-icons text-sm">visibility</span>
+            </a>
+            <button onclick="event.stopPropagation(); window._showEditTournamentModal('${t.id}', '${t.name.replace(/'/g, "\\'")}', '${(t.courses || t.course || "").replace(/'/g, "\\'")}')" class="w-9 h-9 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary transition-all shadow-sm" title="Editar">
+              <span class="material-icons text-sm">edit</span>
+            </button>
+            <button onclick="event.stopPropagation(); window._deleteTournament('${t.id}', '${t.name.replace(/'/g, "\\'")}')" class="w-9 h-9 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-300 hover:text-red-500 transition-all shadow-sm" title="Eliminar">
+              <span class="material-icons text-sm">delete</span>
+            </button>
+          </div>
         </div>
-        <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-          <button onclick="event.stopPropagation(); window._showEditTournamentModal('${t.id}', '${t.name.replace(/'/g, "\\'")}', '${(t.courses || t.course || "").replace(/'/g, "\\'")}')" class="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary transition-all shadow-sm">
-            <span class="material-icons text-sm">edit</span>
-          </button>
-          <button onclick="event.stopPropagation(); window._deleteTournament('${t.id}', '${t.name.replace(/'/g, "\\'")}')" class="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-300 hover:text-red-500 transition-all shadow-sm">
-            <span class="material-icons text-sm">delete</span>
-          </button>
-        </div>
+
+        <h3 class="text-xl sm:text-2xl font-black uppercase tracking-tight text-slate-900 dark:text-white mb-2 leading-tight line-clamp-2">${t.name}</h3>
+        <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] flex items-center gap-2">
+          <span class="material-icons text-xs ${isPast ? 'text-amber-400' : 'text-emerald-400'}">location_on</span> ${t.courses || t.course || "CLUB DE GOLF COLIMA"}
+        </p>
       </div>
-      <h3 class="text-2xl font-black uppercase tracking-tight text-slate-900 dark:text-white mb-2 truncate">${t.name}</h3>
-      <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] flex items-center gap-2">
-        <span class="material-icons text-xs text-primary">location_on</span> ${t.courses || t.course || "SIN CAMPO"}
-      </p>
-      <div class="mt-10 pt-6 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+
+      <div class="mt-8 pt-5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between relative z-10">
         <div class="flex items-center gap-2">
-           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-           <span class="text-[9px] font-black uppercase text-emerald-500 tracking-widest">Master Console</span>
+           <span class="w-2 h-2 rounded-full ${isPast ? 'bg-amber-400' : 'bg-emerald-500 animate-pulse'}"></span>
+           <span class="text-[9px] font-black uppercase ${isPast ? 'text-amber-400' : 'text-emerald-400'} tracking-widest">${isPast ? 'Resultados Históricos' : 'Master Console'}</span>
         </div>
-        <div class="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-300 group-hover:bg-primary group-hover:text-slate-900 transition-all">
-          <span class="material-icons">chevron_right</span>
+        <div class="w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-slate-900 transition-all">
+          <span class="material-icons text-base">chevron_right</span>
         </div>
       </div>
     </div>
-  `).join('');
+    `;
+  }).join('');
 };
 
 window._showEditTournamentModal = (id, name, currentCourses) => {
